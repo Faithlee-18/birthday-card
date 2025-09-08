@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday 🎂</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div class="balloons" aria-hidden="true"></div>
+
+  <main class="card" role="main" aria-labelledby="title">
+    <section class="left">
+      <h1 id="title" class="headline">Happy Birthday, <span id="toName">Teman</span>! 🎉</h1>
+      <p class="sub">
+        Panjang umur, sehat selalu, dan kiranya setiap harimu dipenuhi damai sejahtera. 
+        Tetap semangat mengejar mimpi—Tuhan menyertai langkahmu! ✨
+      </p>
+      <p class="muted">— Dari Sahabatmu ❤</p>
+
+      <div class="actions">
+        <button id="openBtn" class="btn btn-primary">Buka Kartu + Putar Musik</button>
+        <button id="confettiBtn" class="btn btn-ghost">Konfeti 🎊</button>
+      </div>
+
+      <div class="footer">Tip: tambahkan <code>?to=Namamu</code> pada URL agar namanya muncul di judul.</div>
+    </section>
+
+    <img class="photo" alt="Birthday" src="hbd.png">
+  </main>
+
+  <!-- Audio player tersembunyi -->
+  <audio id="bgMusic" src="hbd.mp3" preload="auto"></audio>
+
+  <script>
+    const openBtn = document.getElementById("openBtn");
+    const music = document.getElementById("bgMusic");
+
+    openBtn.addEventListener("click", () => {
+      // Play musik saat tombol ditekan
+      music.play();
+    });
+  </script>
+</body>
+</html>
