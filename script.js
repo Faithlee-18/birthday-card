@@ -1,86 +1,59 @@
-// ====== Personalize name via URL ?to=Name ======
-const params = new URLSearchParams(location.search);
-const to = params.get('to');
-if(to){
-  document.getElementById('toName').textContent = decodeURIComponent(to);
-  document.title = `Happy Birthday, ${decodeURIComponent(to)} 🎂`;
+// Ambil canvas
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+
+// Sesuaikan ukuran canvas
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Buat partikel konfeti
+const confettiCount = 200;
+const confetti = [];
+
+for (let i = 0; i < confettiCount; i++) {
+  confetti.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 6 + 4, // ukuran
+    d: Math.random() * confettiCount, // kepadatan
+    color:
+      "hsl(" + Math.random() * 360 + ", 100%, 50%)", // warna random
+    tilt: Math.floor(Math.random() * 10) - 10,
+  });
 }
 
-// ====== Confetti ======
-const canvas = document.getElementById('confetti');
-const ctx = canvas.getContext('2d');
-let W,H, pieces=[];
-function resize(){
-  W = canvas.width = innerWidth;
-  H = canvas.height = innerHeight;
-}
-addEventListener('resize', resize); resize();
+// Fungsi gambar konfeti
+function drawConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-function spawnConfetti(n=180){
-  for(let i=0;i<n;i++){
-    pieces.push({
-      x: Math.random()*W,
-      y: -20 - Math.random()*H,
-      w: 6+Math.random()*6,
-      h: 8+Math.random()*10,
-      vy: 1+Math.random()*3.5,
-      vx: -1+Math.random()*2,
-      rot: Math.random()*Math.PI,
-      vr: (-0.1+Math.random()*0.2),
-      color: `hsl(${Math.random()*360}, 90%, 60%)`
-    });
-  }
+  confetti.forEach((c) => {
+    ctx.beginPath();
+    ctx.fillStyle = c.color;
+    ctx.fillRect(c.x, c.y, c.r, c.r);
+    ctx.fill();
+  });
+
+  updateConfetti();
 }
 
-function tick(){
-  ctx.clearRect(0,0,W,H);
-  for(const p of pieces){
-    p.x += p.vx;
-    p.y += p.vy;
-    p.rot += p.vr;
-    if(p.y > H+30) {
-      p.y = -20; p.x = Math.random()*W;
+// Update posisi konfeti
+function updateConfetti() {
+  confetti.forEach((c) => {
+    c.y += Math.cos(c.d) + 1 + c.r / 2;
+    c.x += Math.sin(c.d);
+
+    if (c.y > canvas.height) {
+      c.y = -10;
+      c.x = Math.random() * canvas.width;
     }
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.rot);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-    ctx.restore();
-  }
-  requestAnimationFrame(tick);
+  });
 }
-tick();
 
-// ====== Balloons ======
-const balloonWrap = document.querySelector('.balloons');
-const colors = ['#ff8da1','#ffd166','#95e1d3','#a29bfe','#ff9bd2','#8fd3fe'];
-function addBalloon(){
-  const b = document.createElement('div');
-  b.className = 'balloon';
-  const c = colors[Math.floor(Math.random()*colors.length)];
-  b.style.setProperty('--c', c);
-  b.style.left = Math.random()*100 + 'vw';
-  b.style.setProperty('--d', (12 + Math.random()*10) + 's');
-  b.style.animationDelay = (-Math.random()*12)+'s';
-  balloonWrap.appendChild(b);
-  setTimeout(()=> b.remove(), 16000);
-}
-setInterval(addBalloon, 700);
-for(let i=0;i<12;i++) addBalloon();
+// Jalankan animasi
+setInterval(drawConfetti, 20);
 
-// ====== Controls ======
-const song = document.getElementById('song');
-const openBtn = document.getElementById('openBtn');
-const confettiBtn = document.getElementById('confettiBtn');
-
-openBtn.addEventListener('click', async () => {
-  try { await song.play(); } catch(e){ }
-  spawnConfetti(220);
-  document.body.animate([{filter:'brightness(1.2)'},{filter:'brightness(1)'}],{duration:600, easing:'ease-out'});
+// Supaya canvas tetap full screen saat resize
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 });
-
-confettiBtn.addEventListener('click', () => spawnConfetti(160));
-
-song.addEventListener('play', () => document.body.classList.add('playing'));
-song.addEventListener('pause', () => document.body.classList.remove('playing'));
